@@ -86,7 +86,9 @@ nav {
 
 }
 
-
+#gengar {
+  float:left;
+}
 
 #pics{
   margin-left: 330px;
