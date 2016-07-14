@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Signup Page</title>
+    <meta charset="UTF-8">
+    <link href="assets/css/style.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="assets/scripts/jquery-2.2.4.min.js" defer></script>
+    <script type="text/javascript" src="assets/scripts/script.js" defer></script>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,500,700' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+    <nav id = "menu">
+        <ul>	
+            <li><a class="active" href="#home">Home</a></li>
+            <li><a href="#Profile">Profile</a></li>
+            <li><a href="#Chat">Chat</a></li>
+            <li><a href="#Settings">Settings</a></li>
+        </ul>
+	</nav>
+    
+    <form id="signup_form">
+            <div class="form_element">
+                <label id="firstNameField">
+                    <span class="label">First Name:</span> 
+                    <input type="text" name="firstName" required>
+                </label>
+            </div>
+            
+            <div class="form_element">
+                <label id="lastNameField">
+                    <span class="label">Last Name:</span>
+                    <input type="text" name="Lastname" required>
+                </label>
+            </div>
+            
+            <div class="form_element">
+                <label id="emailField">
+                    <span class="label">Email Address:</span>
+                    <input type="text" name="email" required>
+                </label>
+            </div>
+            
+            <div class="form_element">
+                <label id="passwordField">
+                    <span class="label">Password:</span>
+                    <input type="password" name="password" required>
+                </label>
+            </div>
+            
+            <div class="form_element">
+                <input id="SubmitButton" type="submit" value="Sign Up">
+            </div>
+    </form>
+
+</body>
+</html>
