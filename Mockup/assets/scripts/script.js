@@ -32,6 +32,14 @@ function largeNav()
     {}
 }
 
+function mDown(obj) {
+    if (! $("div#chat").hasClass("dis")){
+        $("div#chat").addClass("dis");
+    } else {
+        $("div#chat").removeClass("dis");
+    }
+}
+
 $(document).ready(function() {
     // Run initially
     largeNav();

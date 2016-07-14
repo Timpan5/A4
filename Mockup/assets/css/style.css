@@ -86,9 +86,22 @@ nav {
 
 }
 
+<<<<<<< HEAD
 #gengar {
   float:left;
 }
+=======
+#chat {
+  float: right;
+  position:fixed;
+  bottom: 0;
+  right: 0;
+  display:none;
+}
+
+
+
+>>>>>>> origin/master
 
 #pics{
   margin-left: 330px;
@@ -108,5 +121,10 @@ div.left{
   margin-left: 300px;
   display:inline-block;
 }
+
+div#chat.dis{
+  display:inline-block;
+}
+
 
 </style>
