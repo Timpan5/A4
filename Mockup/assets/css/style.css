@@ -123,5 +123,69 @@ div#chat.dis{
   display:inline-block;
 }
 
+form {
+    border: 1px solid #ccc;
+    padding: 2rem;
+    margin: 2rem auto;
+    width: 66%;
+}
+
+div.form_element{
+    margin: 1rem;
+}
+
+label, input{
+    font: 400 18pt/24pt "DINPro", "Helvetica", sans-serif;
+}
+
+input {
+    border: 1px solid #ccc;
+    padding: 0.25rem;
+}
+
+label {
+    cursor: pointer;
+    display: block;
+    margin: 2rem 0;
+}
+label:first-child {
+    margin-top: 0;
+}
+label:after {
+    clear: both;
+    display: table;
+    content: " ";
+}
+
+label span.label {
+    float: left;
+    display: block;
+    width: 20rem;
+}
+
+label input {
+    float: left;
+}
+
+input[type="submit"],
+input[type="reset"] {
+    cursor: pointer;
+    padding: 0.5rem 2rem;
+    /*margin-left: 10rem;*/
+}
+input[type="submit"]:hover,
+input[type="reset"]:hover {
+    background-color: #f3f3f3;
+}
+input[type="submit"]:active,
+input[type="reset"]:active {
+    border-color: #999;
+    background-color: #ccc;
+}
+
+input:invalid {
+  outline: 2px solid red;
+  background-color: #FFC6B3;
+}
 
 </style>
