@@ -2,7 +2,7 @@
 
 <html>
 <head>
-    <title>Signup Page</title>
+    <title>Login Page</title>
     <meta charset="UTF-8">
     <link href="assets/css/style.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="assets/scripts/jquery-2.2.4.min.js" defer></script>
@@ -12,19 +12,6 @@
 
 <body>
     <form id="signup_form">
-            <div class="form_element">
-                <label id="firstNameField">
-                    <span class="label">First Name:</span> 
-                    <input type="text" name="firstName" required>
-                </label>
-            </div>
-            
-            <div class="form_element">
-                <label id="lastNameField">
-                    <span class="label">Last Name:</span>
-                    <input type="text" name="Lastname" required>
-                </label>
-            </div>
             
             <div class="form_element">
                 <label id="emailField">
@@ -41,9 +28,16 @@
             </div>
             
             <div class="form_element">
-				<button class="placeholder" onclick="signup()">Signup</button>
-                <!-- <input id="SignUpButton" type="submit" value="Sign Up"> -->
+				<button class="placeholder" onclick="logIn()">Log In</button> 
+                <!-- <input id="logInButton" type="submit" value="Log In"> -->
             </div>
+            
+            <div class="form_element">
+                <span class="label"><strong>New to our website?</strong></span><br>
+				<button class="placeholder" onclick="register()">Register</button>
+                <!-- <input id="registerButton" type="submit" value="Register"> -->
+            </div>
+
     </form>
 
 </body>
