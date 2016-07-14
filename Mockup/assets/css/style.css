@@ -86,11 +86,11 @@ nav {
 
 }
 
-<<<<<<< HEAD
+
 #gengar {
   float:left;
 }
-=======
+
 #chat {
   float: right;
   position:fixed;
@@ -99,9 +99,6 @@ nav {
   display:none;
 }
 
-
-
->>>>>>> origin/master
 
 #pics{
   margin-left: 330px;
