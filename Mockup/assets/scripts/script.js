@@ -40,6 +40,18 @@ function mDown(obj) {
     }
 }
 
+function logIn() {
+	document.location.href = "main.html";
+}
+
+function register() {
+	document.location.href = "signup.html";
+}
+
+function signup() {
+	document.location.href = "main.html";
+}
+
 $(document).ready(function() {
     // Run initially
     largeNav();
