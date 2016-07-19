@@ -2,9 +2,6 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 
-
-const PORT=8888;
-
 //Create server
 var server = http.createServer( function (request, response) {  
    var pathname = url.parse(request.url).pathname;
@@ -52,8 +49,8 @@ var server = http.createServer( function (request, response) {
 	}  
 });
 
-server.listen(PORT);
-console.log('Server running at http://127.0.0.1:8888/');
+server.listen(process.env.PORT || 8888);
+console.log('Server running');
 
 //Send response back
 function sendData(textHead, data, response) {
