@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <form id="signup_form">
+    <form id="signup_form" action="/signin" method="post">
             
             <div class="form_element">
                 <label id="emailField">
@@ -28,14 +28,14 @@
             </div>
             
             <div class="form_element">
-				<button class="placeholder" onclick="logIn()">Log In</button> 
-                <!-- <input id="logInButton" type="submit" value="Log In"> -->
+				<!-- <button class="placeholder" onclick="logIn()">Log In</button> -->
+                <input id="logInButton" type="submit" value="Log In">
             </div>
             
             <div class="form_element">
                 <span class="label"><strong>New to our website?</strong></span><br>
-				<button class="placeholder" onclick="register()">Register</button>
-                <!-- <input id="registerButton" type="submit" value="Register"> -->
+				<!-- <button class="placeholder" onclick="register()">Register</button> -->
+                <input id="registerButton" type="submit" value="Register">
             </div>
 
     </form>

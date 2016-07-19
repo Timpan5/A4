@@ -41,7 +41,9 @@ function mDown(obj) {
 }
 
 function logIn() {
-	document.location.href = "main.html";
+	var $title = $("input[name=email]").val();
+	var $password = $("input[name=password]").val();
+	alert($password);
 }
 
 function register() {
