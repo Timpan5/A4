@@ -5,12 +5,10 @@ var url = require('url');
 var pg = require('pg');
 const Pool = require('pg-pool');
 
+
+
+
 //PSQL - Database URL may change automatically, check settings page config variables
-//var client = new pg.Client();
-//var connectionString = "postgres://ltkqbskivefqvj:RUinqM5ypw2qjNNS6Ky7TykoO8@ec2-204-236-228-133.compute-1.amazonaws.com:5432/d6l1i0e4ue6m2c";
-
-
-
 const config = {
 	user: 'ltkqbskivefqvj',
 	password: 'RUinqM5ypw2qjNNS6Ky7TykoO8',
@@ -99,37 +97,28 @@ function sendData(textHead, data, response) {
 function auth(user, pass) {
 	console.log(user, pass);
 	
-	pool.query('SELECT * FROM login', function(err, result) {
-  console.log(result.rows); 
+	pool.query('SELECT * FROM login WHERE email=$1', [user], function(err, result) {
+	//console.log(result.rows); 
+	
+	if (result.rows.length && pass == result.rows[0].password) {
+		//Correct username and password
+		console.log("Login: Success");
+	}
+	
+	else if (result.rows.length) {
+		//Correct username wrong password
+		console.log("Login: Wrong Password");
+	}
+	
+	else {
+		//Wrong username
+		console.log("Login: Wrong Username");
+	}
+	
+
 });
 	
 	
-/*
-	pg.defaults.ssl = false;
-pg.connect(process.env.DATABASE_URL, function(err, client) {
-  if (err) throw err;
-  console.log('Connected to postgres! Getting schemas...');
 
-  client
-    .query('SELECT * FROM login;')
-    .on('row', function(row) {
-      console.log(JSON.stringify(row));
-    });
-});
-
-*/
-
-
-
-	
-	/*
-	pg.connect(connectionString, function(err, client, done) {
-		client.query('SELECT * FROM login', function(err, result) {
-			done();
-			if(err) return console.error(err);
-			console.log(result.rows);
-		});
-	});
-	*/
 	
 }
