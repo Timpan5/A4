@@ -3,12 +3,10 @@ var fs = require('fs');
 var qs = require('querystring');
 var url = require('url');
 var pg = require('pg');
-const Pool = require('pg-pool');
-
-
 
 
 //PSQL - Database URL may change automatically, check settings page config variables
+const Pool = require('pg-pool');
 const config = {
 	user: 'ltkqbskivefqvj',
 	password: 'RUinqM5ypw2qjNNS6Ky7TykoO8',
@@ -17,8 +15,22 @@ const config = {
 	database: 'd6l1i0e4ue6m2c',
 	ssl: true
 };
-
 var pool = new Pool(config);
+
+//OAuth
+var oauth2 = require('simple-oauth2')({
+	clientID: '22064ceb97630ea6a4a3', 
+	clientSecret: 'ae8770a86cab42c44fd3e29a4da4a4110525b5ee',
+	site: 'https://github.com/login',
+	tokenPath: '/oauth/access_token',
+	authorizationPath: '/oauth/authorize'
+});
+
+var authorization_uri = oauth2.authCode.authorizeURL({
+	redirect_uri: 'http://localhost:5000/callback', //HARDCODED PORT
+	scope: 'notifications',
+	state: '3(#0/!~'
+});
 
 //Create server
 var server = http.createServer( function (request, response) {  
@@ -80,6 +92,29 @@ var server = http.createServer( function (request, response) {
 		sendData({'Content-Type': 'text/html'}, data, response);
 		console.log('Sent signup.html');
 		});
+
+	}
+	
+	//Access OAuth
+	else if (pathname.substr(1) == 'auth') {
+		//response.redirect(authorization_uri);
+		response.writeHead(302, {'Location': authorization_uri});
+		response.end();
+	}
+	
+	//Callback OAuth
+	else if (pathname.substr(1) == 'auth') {
+		var code = request.query.code;
+		
+		oauth2.authCode.getToken({
+			code: code,
+			redirect_uri: 'http://localhost:5000/callback' //HARDCODED PORT
+		}, saveToken);
+ 
+		function saveToken(error, result) {
+			if (error) { console.log('Access Token Error', error.message); }
+			token = oauth2.accessToken.create(result);
+		}
 
 	}
 	
@@ -167,7 +202,5 @@ function create(first, last, user, pass) {
 	}
 
 });
-	
-	
 	
 }
