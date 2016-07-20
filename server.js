@@ -3,12 +3,24 @@ var fs = require('fs');
 var qs = require('querystring');
 var url = require('url');
 var pg = require('pg');
+const Pool = require('pg-pool');
 
 //PSQL - Database URL may change automatically, check settings page config variables
 //var client = new pg.Client();
 //var connectionString = "postgres://ltkqbskivefqvj:RUinqM5ypw2qjNNS6Ky7TykoO8@ec2-204-236-228-133.compute-1.amazonaws.com:5432/d6l1i0e4ue6m2c";
 
 
+
+const config = {
+	user: 'ltkqbskivefqvj',
+	password: 'RUinqM5ypw2qjNNS6Ky7TykoO8',
+	host: 'ec2-204-236-228-133.compute-1.amazonaws.com',
+	port: '5432',
+	database: 'd6l1i0e4ue6m2c',
+	ssl: true
+};
+
+var pool = new Pool(config);
 
 //Create server
 var server = http.createServer( function (request, response) {  
@@ -86,6 +98,11 @@ function sendData(textHead, data, response) {
 //Authentication
 function auth(user, pass) {
 	console.log(user, pass);
+	
+	pool.query('SELECT * FROM login', function(err, result) {
+  console.log(result.rows); 
+});
+	
 	
 /*
 	pg.defaults.ssl = false;
