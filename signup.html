@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <form id="signup_form">
+    <form id="signup_form" action="/signup" method="post">
             <div class="form_element">
                 <label id="firstNameField">
                     <span class="label">First Name:</span> 
@@ -41,8 +41,8 @@
             </div>
             
             <div class="form_element">
-				<button class="placeholder" onclick="signup()">Signup</button>
-                <!-- <input id="SignUpButton" type="submit" value="Sign Up"> -->
+				<!-- <button class="placeholder" onclick="signup()">Signup</button> -->
+                <input id="SignUpButton" type="submit" value="Sign Up">
             </div>
     </form>
 

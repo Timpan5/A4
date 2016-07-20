@@ -74,6 +74,31 @@ var server = http.createServer( function (request, response) {
 
 	}
 	
+	//Signup page
+	else if (pathname.substr(1) == 'signup.html') {
+		fs.readFile("signup.html", function (err, data) {
+		sendData({'Content-Type': 'text/html'}, data, response);
+		console.log('Sent signup.html');
+		});
+
+	}
+	
+	
+	//Register new user
+	else if (pathname.substr(1) == 'signup') {
+		var body = '';
+		
+		request.on('data', function (data) {
+			body += data;
+		});
+		
+		request.on('end', function () {
+            var post = qs.parse(body);
+			create(post.firstName, post.Lastname, post.email, post.password);
+        });
+
+	}
+	
 	//Url not recognized
 	else {	
         response.writeHead(404, {'Content-Type': 'text/html'});	
@@ -114,11 +139,35 @@ function auth(user, pass) {
 		//Wrong username
 		console.log("Login: Wrong Username");
 	}
+
+});
 	
+}
+
+//Create new user
+function create(first, last, user, pass) { 
+	console.log(first, last, user, pass);
+	
+	pool.query('SELECT * FROM login WHERE email=$1', [user], function(err, result) {
+	//console.log(result.rows); 
+	
+	if (result.rows.length) {
+		//User already exists
+		console.log("Create: User already exists");
+	}
+	
+	else {
+		//Create this user
+		pool.query('INSERT INTO login VALUES ($1, $2)', [user, pass], function(err) {
+			pool.query('INSERT INTO name VALUES ($1, $2, $3)', [user, first, last], function(err) {
+			});
+		});
+		
+		//Now redirect to main
+	}
 
 });
 	
 	
-
 	
 }
