@@ -6,6 +6,7 @@ var pg = require('pg');
 var rr = require("request");
 var gh = require("github");
 var Curl = require('node-libcurl').Curl;
+var crypto = require('crypto'), algorithm = 'aes-256-ctr', password = 'csc309';
 
 //PSQL - Database URL may change automatically, check settings page config variables
 const Pool = require('pg-pool');
@@ -33,7 +34,7 @@ var oauth2 = require('simple-oauth2')({
 var authorization_uri = oauth2.authCode.authorizeURL({
 	redirect_uri: 'http://localhost:5000/callback', //HARDCODED PORT
 	scope: 'user:email',
-	state: '3(#0/!~'
+	state: '*(A&S%f'
 });
 
 //Setup Github API access
@@ -88,6 +89,15 @@ var server = http.createServer( function (request, response) {
 		});
 	}
 	
+	//Send jQuery cookies library
+	else if (pathname.substr(1) == 'assets/scripts/jquery.cookie.js') {
+		fs.readFile("assets/scripts/jquery.cookie.js", function (err, data) {
+		sendData({'Content-Type': 'text/javascript'}, data, response);
+		console.log('Sent jquery cookie library');
+		});
+	}
+	
+	
 	//Verify Signin
 	else if (pathname.substr(1) == 'signin') {
 		var body = '';
@@ -98,7 +108,7 @@ var server = http.createServer( function (request, response) {
 		
 		request.on('end', function () {
             var post = qs.parse(body);
-			auth(post.email, post.password);
+			auth(post.email, post.password, response);
         });
 
 	}
@@ -149,27 +159,32 @@ var server = http.createServer( function (request, response) {
 			
 			var headers = {"User-Agent" : "Timpan5"};
 			
-			rr({url : 'http://api.github.com/user/emails?' + tok, headers: headers}, function (error, response, body) {
-				if (!error && response.statusCode == 200) {
-					console.log(body); 
+
+			var email;
+			
+			rr({url : 'http://api.github.com/user/emails?' + tok, headers: headers}, function (error, res, body) {
+				if (!error && res.statusCode == 200) {
+					email = JSON.parse(body)[0].email;
+					console.log(email); 
+					
+					pool.query('SELECT * FROM name WHERE email=$1', [email], function(err, result) {
+						if (result.rows.length) {
+							sendLogin(response, "Success", "Github", email);
+							console.log('Sent loginResult.html - Success');
+						}
+						else {
+							sendLogin(response, "Fail", "Github", "Username");
+							console.log('Sent loginResult.html - Fail Username');
+						}
+					});
 				}
+					
 				else {
 					console.log("Get Email error:" + error);
 				}
 			});
-			
-
-
-			
-			fs.readFile("index.html", function (err, data) {
-			sendData({'Content-Type': 'text/html'}, data, response);
-			console.log('Sent index.html');
-			});
-				
+	
 		}
-
-		
-		
 	}
 	
 	
@@ -208,7 +223,7 @@ function sendData(textHead, data, response) {
 }
 
 //Authentication
-function auth(user, pass) {
+function auth(user, pass, response) {
 	console.log(user, pass);
 	
 	pool.query('SELECT * FROM login WHERE email=$1', [user], function(err, result) {
@@ -216,19 +231,21 @@ function auth(user, pass) {
 	
 	if (result.rows.length && pass == result.rows[0].password) {
 		//Correct username and password
-		console.log("Login: Success");
+		sendLogin(response, "Success", "Manual", user);
+		console.log('Sent loginResult.html - Success');
 	}
 	
 	else if (result.rows.length) {
 		//Correct username wrong password
-		console.log("Login: Wrong Password");
+		sendLogin(response, "Fail", "Manual", "Password");
+		console.log('Sent loginResult.html - Fail Password');
 	}
 	
 	else {
 		//Wrong username
-		console.log("Login: Wrong Username");
+		sendLogin(response, "Fail", "Manual", "Username");
+		console.log('Sent loginResult.html - Fail Username');
 	}
-
 });
 	
 }
@@ -257,4 +274,31 @@ function create(first, last, user, pass) {
 
 });
 	
+}
+
+//Send Login Result
+function sendLogin(response, decision, source, user){
+	fs.readFile("loginResult.html", function (err, data) {
+		response.writeHead(200, {'Content-Type': 'text/html'});	
+		response.write(data);
+		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
+		response.end();
+		console.log('Sent loginResult.html - Success');
+	});
+}
+
+//Encrypt
+function encrypt(text){
+	var cipher = crypto.createCipher(algorithm, password)
+	var crypted = cipher.update(text,'utf8','hex')
+	crypted += cipher.final('hex');
+	return crypted;
+}
+ 
+//Decrypt
+function decrypt(text){
+	var decipher = crypto.createDecipher(algorithm,password)
+	var dec = decipher.update(text,'hex','utf8')
+	dec += decipher.final('utf8');
+	return dec;
 }

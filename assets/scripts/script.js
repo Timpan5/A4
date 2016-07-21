@@ -54,6 +54,7 @@ function signup() {
 	document.location.href = "main.html";
 }
 
+
 $(document).ready(function() {
     // Run initially
     largeNav();
@@ -64,5 +65,20 @@ $(document).ready(function() {
        $(window).off('scroll');
        largeNav();
     });
-    
+
+});
+
+//Check login credentials
+$(function(){
+	
+	if($('body').is('.credentials')){
+		var credentials = $("#credentials").html();
+		var split = credentials.split(":");
+		var result = split[0];
+		var method = split[1];
+		var user = split[2];
+
+		
+		
+	}
 });
