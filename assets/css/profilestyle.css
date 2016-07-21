@@ -1,0 +1,29 @@
+#main-header {
+	background-color: red;
+	padding: 8px;
+}
+
+#main-header-logo {
+
+}
+
+#main-header-search {
+	position: absolute;
+	top: 60px;
+	left: 250px;
+}
+
+#main-header-location {
+	position: absolute;
+	top: 60px;
+	left: 500px;
+}
+
+#profile-header {
+	background-color: gray;
+	padding: 8px;
+}
+
+#profile-picture {
+	float:right;
+}
