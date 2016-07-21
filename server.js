@@ -3,7 +3,9 @@ var fs = require('fs');
 var qs = require('querystring');
 var url = require('url');
 var pg = require('pg');
-
+var rr = require("request");
+var gh = require("github");
+var Curl = require('node-libcurl').Curl;
 
 //PSQL - Database URL may change automatically, check settings page config variables
 const Pool = require('pg-pool');
@@ -26,16 +28,31 @@ var oauth2 = require('simple-oauth2')({
 	authorizationPath: '/oauth/authorize'
 });
 
+//Port must be changed to use env
+//Also change on github settings for authorization callback url
 var authorization_uri = oauth2.authCode.authorizeURL({
 	redirect_uri: 'http://localhost:5000/callback', //HARDCODED PORT
-	scope: 'notifications',
+	scope: 'user:email',
 	state: '3(#0/!~'
+});
+
+//Setup Github API access
+var github = new gh({
+    debug: true,
+    protocol: "https",
+    host: "api.github.com", 
+    headers: {
+        "user-agent": "A4" 
+    },
+    followRedirects: false, 
+    timeout: 50000
 });
 
 //Create server
 var server = http.createServer( function (request, response) {  
-   var pathname = url.parse(request.url).pathname;
-
+	var pathname = url.parse(request.url).pathname;
+	//console.log("Path: " + pathname );
+   
    //Check requested resource
    console.log("Request: " + pathname);
    
@@ -103,19 +120,56 @@ var server = http.createServer( function (request, response) {
 	}
 	
 	//Callback OAuth
-	else if (pathname.substr(1) == 'auth') {
-		var code = request.query.code;
+	else if (pathname.substr(1,8) == 'callback') {
+		console.log("In callback");
+		
+		var para = url.parse(request.url,true);
+
+        var code = para.query.code;
 		
 		oauth2.authCode.getToken({
 			code: code,
-			redirect_uri: 'http://localhost:5000/callback' //HARDCODED PORT
+			redirect_uri: 'http://localhost:5000/callback' //HARDCODED PORT, must match on github website
 		}, saveToken);
  
+
 		function saveToken(error, result) {
 			if (error) { console.log('Access Token Error', error.message); }
 			token = oauth2.accessToken.create(result);
+			
+			//console.log("Token: " + (JSON.stringify(token)));
+			var tokenString = JSON.stringify(token);
+			var tok = (JSON.parse(tokenString)["token"]);
+			console.log("Tok: " + tok);
+			
+			github.authenticate({
+				type: "oauth",
+				token: (JSON.parse(tokenString)["token"])
+			});
+			
+			var headers = {"User-Agent" : "Timpan5"};
+			
+			rr({url : 'http://api.github.com/user/emails?' + tok, headers: headers}, function (error, response, body) {
+				if (!error && response.statusCode == 200) {
+					console.log(body); 
+				}
+				else {
+					console.log("Get Email error:" + error);
+				}
+			});
+			
+
+
+			
+			fs.readFile("index.html", function (err, data) {
+			sendData({'Content-Type': 'text/html'}, data, response);
+			console.log('Sent index.html');
+			});
+				
 		}
 
+		
+		
 	}
 	
 	
