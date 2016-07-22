@@ -283,7 +283,6 @@ function sendLogin(response, decision, source, user){
 		response.write(data);
 		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
 		response.end();
-		console.log('Sent loginResult.html - Success');
 	});
 }
 

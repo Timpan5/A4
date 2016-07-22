@@ -54,6 +54,14 @@ function signup() {
 	document.location.href = "main.html";
 }
 
+function ghLogin() {
+	//Hardcoded host, includes port for local testing, change to 'hostname'
+	$(location).attr('href', "http://" + window.location.host + "/auth")
+}
+
+function ghRegister() {
+	
+}
 
 $(document).ready(function() {
     // Run initially
