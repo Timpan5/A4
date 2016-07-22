@@ -5,7 +5,6 @@ var url = require('url');
 var pg = require('pg');
 var rr = require("request");
 var gh = require("github");
-var Curl = require('node-libcurl').Curl;
 var crypto = require('crypto'), algorithm = 'aes-256-ctr', password = 'csc309';
 
 //PSQL - Database URL may change automatically, check settings page config variables
@@ -108,6 +107,15 @@ var server = http.createServer( function (request, response) {
 		
 		request.on('end', function () {
             var post = qs.parse(body);
+			
+			var encrypted = encrypt(post.email);
+			
+			console.log("===");
+			console.log("Base username: " + post.email);
+			console.log("Encrypted username: " + encrypted);
+			console.log("Decrypted username: " + decrypt(encrypted));
+			console.log("===");
+			
 			auth(post.email, post.password, response);
         });
 
@@ -167,14 +175,25 @@ var server = http.createServer( function (request, response) {
 					email = JSON.parse(body)[0].email;
 					console.log(email); 
 					
+					//Login if already exists
 					pool.query('SELECT * FROM name WHERE email=$1', [email], function(err, result) {
 						if (result.rows.length) {
-							sendLogin(response, "Success", "Github", email);
+							sendLogin(response, "Success", "Github", email, 1);
 							console.log('Sent loginResult.html - Success');
 						}
 						else {
-							sendLogin(response, "Fail", "Github", "Username");
-							console.log('Sent loginResult.html - Fail Username');
+							pool.query('SELECT * FROM login WHERE email=$1', [email], function(err, result) {
+								//Check if already exists as manual
+								if (result.rows.length) {
+									sendLogin(response, "Fail", "Github", "Exists", 0);
+									console.log('Sent loginResult.html - Fail');
+								}
+								//Create new user
+								else {
+									sendLogin(response, "Register", "Github", email, 1);
+									console.log('Sent loginResult.html - Create User');
+								}
+							});
 						}
 					});
 				}
@@ -198,7 +217,7 @@ var server = http.createServer( function (request, response) {
 		
 		request.on('end', function () {
             var post = qs.parse(body);
-			create(post.firstName, post.Lastname, post.email, post.password);
+			create(response, post.firstName, post.Lastname, post.email, post.password);
         });
 
 	}
@@ -231,57 +250,75 @@ function auth(user, pass, response) {
 	
 	if (result.rows.length && pass == result.rows[0].password) {
 		//Correct username and password
-		sendLogin(response, "Success", "Manual", user);
+		sendLogin(response, "Success", "Manual", user, 1);
 		console.log('Sent loginResult.html - Success');
 	}
 	
 	else if (result.rows.length) {
 		//Correct username wrong password
-		sendLogin(response, "Fail", "Manual", "Password");
+		sendLogin(response, "Fail", "Manual", "Password", 0);
 		console.log('Sent loginResult.html - Fail Password');
 	}
 	
 	else {
 		//Wrong username
-		sendLogin(response, "Fail", "Manual", "Username");
+		sendLogin(response, "Fail", "Manual", "Username", 0);
 		console.log('Sent loginResult.html - Fail Username');
 	}
 });
 	
 }
 
-//Create new user
-function create(first, last, user, pass) { 
-	console.log(first, last, user, pass);
+//Create new user manually
+function create(response, first, last, user, pass) { 
+	//console.log(first, last, user, pass);
 	
-	pool.query('SELECT * FROM login WHERE email=$1', [user], function(err, result) {
-	//console.log(result.rows); 
-	
-	if (result.rows.length) {
-		//User already exists
-		console.log("Create: User already exists");
-	}
-	
-	else {
-		//Create this user
-		pool.query('INSERT INTO login VALUES ($1, $2)', [user, pass], function(err) {
-			pool.query('INSERT INTO name VALUES ($1, $2, $3)', [user, first, last], function(err) {
-			});
-		});
-		
-		//Now redirect to main
-	}
+	//Check if user is Github exclusive
+	pool.query('SELECT * FROM name WHERE email=$1', [user], function(err, result) {
 
-});
+		if (result.rows.length) {
+			//User already exists
+			sendLogin(response, "Fail", "Github", "Exclusive", 0);
+			console.log("Create: User already exists from Github");
+		}
 	
+		else {
+			//Check if user exists in manual
+			pool.query('SELECT * FROM login WHERE email=$1', [user], function(err, result) {
+
+				if (result.rows.length) {
+					//User already exists
+					sendLogin(response, "Fail", "Manual", "Exists", 0);
+					console.log("Create: User already exists");
+				}
+	
+				else {
+					//Create this user
+					pool.query('INSERT INTO login VALUES ($1, $2)', [user, pass], function(err) {
+						pool.query('INSERT INTO name VALUES ($1, $2, $3)', [user, first, last], function(err) {
+						});
+					});
+					sendLogin(response, "Success", "Manual", user, 1);
+				}
+			});
+		}
+	});
 }
 
 //Send Login Result
-function sendLogin(response, decision, source, user){
+function sendLogin(response, decision, source, user, access){
 	fs.readFile("loginResult.html", function (err, data) {
 		response.writeHead(200, {'Content-Type': 'text/html'});	
 		response.write(data);
 		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
+		
+		if (access) {
+			response.write("<div id=\"access\"> " + encrypt(user) + " </div>");
+		}
+		else {
+			response.write("<div id=\"access\"></div>");
+		}
+		
 		response.end();
 	});
 }

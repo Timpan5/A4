@@ -86,7 +86,8 @@ $(function(){
 		var method = split[1];
 		var user = split[2];
 
-		
-		
+		var access = $("#access").html();
+		$.cookie('access', access);
+		//$.cookie('access');
 	}
 });
