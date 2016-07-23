@@ -6,6 +6,7 @@ var pg = require('pg');
 var rr = require("request");
 var gh = require("github");
 var crypto = require('crypto'), algorithm = 'aes-256-ctr', password = 'csc309';
+var requestIp = require('request-ip');
 
 //PSQL - Database URL may change automatically, check settings page config variables
 const Pool = require('pg-pool');
@@ -110,13 +111,15 @@ var server = http.createServer( function (request, response) {
 			
 			var encrypted = encrypt(post.email);
 			
+			/*
 			console.log("===");
 			console.log("Base username: " + post.email);
 			console.log("Encrypted username: " + encrypted);
 			console.log("Decrypted username: " + decrypt(encrypted));
 			console.log("===");
+			*/
 			
-			auth(post.email, post.password, response);
+			auth(post.email, post.password, response, request);
         });
 
 	}
@@ -222,6 +225,53 @@ var server = http.createServer( function (request, response) {
 
 	}
 	
+	else if (pathname.substr(1,11) == 'userUpdate\/') {
+		
+		var access = decrypt(decodeURI(pathname.substr(12)).replace(/\s/g, ""));
+		var ip = requestIp.getClientIp(request);
+		
+		
+		if (access == ip) {
+			
+			var body = '';
+			var email;
+			var password; 
+			var split;
+			
+			request.on('data', function (data) {
+				body += data;
+			});
+		
+		
+			request.on('end', function () {
+				split = body.split("+");
+				email = split[0];
+				password = split[1];
+
+				pool.query('SELECT * FROM login WHERE email=$1', [email], function(err, result) {
+				
+					if (result.rows.length) {
+						pool.query('UPDATE login SET password=$1 WHERE email=$2', [password, email], function(err, result) {})
+						var jsonObj = {"decision" : 1, "reason" : "Success: Changed password of " + email};
+						sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
+					}
+					
+					else {
+						pool.query('INSERT INTO login VALUES ($1, $2)', [email, password], function(err) {})
+						var jsonObj = {"decision" : 1, "reason" : "Success: Created user for " + email};
+						sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
+					}
+				});
+			});
+		}
+		
+		else {
+			var jsonObj = {"decision" : 0, "reason" : "Invalid Credentials"};
+			sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
+		}
+		
+	}
+	
 	//Url not recognized
 	else {	
         response.writeHead(404, {'Content-Type': 'text/html'});	
@@ -242,13 +292,29 @@ function sendData(textHead, data, response) {
 }
 
 //Authentication
-function auth(user, pass, response) {
+function auth(user, pass, response, request) {
 	console.log(user, pass);
 	
 	pool.query('SELECT * FROM login WHERE email=$1', [user], function(err, result) {
 	//console.log(result.rows); 
 	
-	if (result.rows.length && pass == result.rows[0].password) {
+	if (result.rows.length && pass == result.rows[0].password && user == "admin") {
+		//Send to an admin control panel html page
+		
+		//Admin Key
+		//var now = new Date();
+		//var d = new Date(1900 + now.getYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+		var ip = requestIp.getClientIp(request);
+		
+		fs.readFile("admin.html", function (err, data) {
+		response.writeHead(200, {'Content-Type': 'text/html'});	
+		response.write(data);
+		response.write("<div id=\"access\"> " + encrypt(ip) + " </div>");
+		response.end();
+		});
+	}
+	
+	else if (result.rows.length && pass == result.rows[0].password) {
 		//Correct username and password
 		sendLogin(response, "Success", "Manual", user, 1);
 		console.log('Sent loginResult.html - Success');
@@ -331,7 +397,7 @@ function encrypt(text){
 	return crypted;
 }
  
-//Decrypt
+//Decrypt 
 function decrypt(text){
 	var decipher = crypto.createDecipher(algorithm,password)
 	var dec = decipher.update(text,'hex','utf8')
