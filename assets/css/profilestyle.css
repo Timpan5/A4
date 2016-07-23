@@ -24,6 +24,65 @@
 	padding: 8px;
 }
 
-#profile-picture {
+#profile-header-picture {
+	float:left;
+	margin-right: 8px;
+}
+
+#name {
+	font-size: 68px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+#location {
+	font-size: 32px;
+}
+
+#profile-sidebar {
+	float: left;
+	width: 15%;
+}
+
+#profile-sidebar-title {
+	font-size: 30px;
+	background-color: #ccffcc;
+	margin: 0px;
+}
+
+#profile-sidebar-right {
 	float:right;
+	width: 15%;
+}
+
+ul li {
+	background: #ff9999;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+ul {
+	padding-left: 0px;
+}
+
+#profile-sidebar-right-title {
+	font-size: 20px;
+	margin: 0px;
+	font-weight: 700;
+}
+
+#profile-sidebar-right-details {
+	background: #ccffcc;
+}
+
+#profile-center {
+	border: 1px solid gray;
+	margin-top: 2px;
+	height: 100%;
+	margin-right: 16%;
+	margin-left: 16%;
+}
+
+#restaurant-details {
+	
 }
