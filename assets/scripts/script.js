@@ -158,6 +158,15 @@ $(function(){
 		var access = $("#access").html();
 		$.cookie('access', access);
 		//var user = $.cookie('access'); Gets the encrypted email/username
+		
+		if (access == "") {
+			//Hardcoded with port, change when deployed to url only
+			$(location).attr('href', "http://" + window.location.host);
+		}
+		else {
+			//redirect to main
+		}
+		
 	}
 	
 	if($('body').is('.admin')){

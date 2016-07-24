@@ -97,6 +97,15 @@ var server = http.createServer( function (request, response) {
 		});
 	}
 	
+	//Send jQuery cookies library
+	else if (pathname.substr(1,11) == 'assets/img/') {
+		
+		fs.readFile("assets/img/" + pathname.substr(12), function (err, data) {
+		sendData({'Content-Type': 'text/javascript'}, data, response);
+		console.log('Sent image' + pathname.substr(12));
+		});
+		
+	}
 	
 	//Verify Signin
 	else if (pathname.substr(1) == 'signin') {
