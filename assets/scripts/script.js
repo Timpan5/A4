@@ -97,16 +97,42 @@ function submitUpdate() {
     {
 		var decision = jsondata["decision"];
 		var $msg = $("<p>");
-		
-		if (decision == 0) {
-			$msg.html(jsondata["reason"]);
-		}
+		$msg.html(jsondata["reason"]);
+		$output.append($msg);
+		$("#email").val("");
+		$("#password").val("");
 
-		else if (decision == 1) {
-			$msg.html(jsondata["reason"]);
-		}
-		
-		
+
+    })
+    .fail(function( jqXHR, textStatus, errorThrown )
+    {
+        alert( "Request failed: " + errorThrown );
+    });
+}
+
+//Admin Control - Delete users
+function submitDelete() {
+	
+	var $output = $("#output")
+	$output.empty();
+	
+	var email = $("#target").val();
+	
+	var access = $("#access").html();
+	var send = "userDelete\/" + access;
+	
+	$.ajax(
+    {
+        url: send,
+        method: "POST",
+		data: email,
+        dataType: "json"
+    })
+    .done(function( jsondata )
+    {
+		var decision = jsondata["decision"];
+		var $msg = $("<p>");
+		$msg.html(jsondata["reason"]);
 		$output.append($msg);
 		$("#email").val("");
 		$("#password").val("");

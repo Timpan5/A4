@@ -272,6 +272,40 @@ var server = http.createServer( function (request, response) {
 		
 	}
 	
+	else if (pathname.substr(1,11) == 'userDelete\/') {
+		
+		var access = decrypt(decodeURI(pathname.substr(12)).replace(/\s/g, ""));
+		var ip = requestIp.getClientIp(request);
+		
+		if (access == ip) {
+			
+			var body = '';
+			var email;
+			var password; 
+			var split;
+			
+			request.on('data', function (data) {
+				body += data;
+			});
+		
+		
+			request.on('end', function () {
+
+				pool.query('DELETE FROM name WHERE email=$1', [body], function(err) {})
+				pool.query('DELETE FROM login WHERE email=$1', [body], function(err) {})
+				var jsonObj = {"decision" : 1, "reason" : "Success: Deleted records for " + body};
+				sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);	
+			});
+		}
+		
+		else {
+			var jsonObj = {"decision" : 0, "reason" : "Invalid Credentials"};
+			sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
+		}
+		
+	}
+	
+	
 	//Url not recognized
 	else {	
         response.writeHead(404, {'Content-Type': 'text/html'});	
