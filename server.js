@@ -71,6 +71,14 @@ var server = http.createServer( function (request, response) {
 		console.log('Sent css');
 		});
 	}
+
+	//Send map css
+	else if (pathname.substr(1) == 'assets/css/mapstyle.css') {
+		fs.readFile("assets/css/mapstyle.css", function (err, data) {
+		sendData({'Content-Type': 'text/css'}, data, response);
+		console.log('Sent css');
+		});
+	}
 	
 	//Send front-end js
 	else if (pathname.substr(1) == 'assets/scripts/script.js') {
@@ -79,6 +87,15 @@ var server = http.createServer( function (request, response) {
 		console.log('Sent js');
 		});
 	}
+
+	//Send Map js
+	else if (pathname.substr(1) == 'assets/scripts/mapscript.js') {
+		fs.readFile("assets/scripts/mapscript.js", function (err, data) {
+		sendData({'Content-Type': 'text/javascript'}, data, response);
+		console.log('Sent js');
+		});
+	}
+
 	
 	//Send jQuery library
 	else if (pathname.substr(1) == 'assets/scripts/jquery-2.2.4.min.js') {
@@ -269,6 +286,7 @@ function auth(user, pass, response) {
 	
 }
 
+
 //Create new user manually
 function create(response, first, last, user, pass) { 
 	//console.log(first, last, user, pass);
@@ -307,7 +325,7 @@ function create(response, first, last, user, pass) {
 
 //Send Login Result
 function sendLogin(response, decision, source, user, access){
-	fs.readFile("loginResult.html", function (err, data) {
+	fs.readFile("maps.html", function (err, data) {
 		response.writeHead(200, {'Content-Type': 'text/html'});	
 		response.write(data);
 		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
