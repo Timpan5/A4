@@ -134,3 +134,11 @@ body.admin button:hover {
 body.admin section {
 	border-bottom: 1px solid black;
 }
+
+#listOutput ul {
+	list-style: square;
+}
+
+section.inner {
+	border: 0px;
+}

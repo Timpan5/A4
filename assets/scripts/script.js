@@ -101,8 +101,6 @@ function submitUpdate() {
 		$output.append($msg);
 		$("#email").val("");
 		$("#password").val("");
-
-
     })
     .fail(function( jqXHR, textStatus, errorThrown )
     {
@@ -170,7 +168,18 @@ function listTables() {
 		$msg.html(jsondata["reason"]);
 		$output.append($msg);
 
-
+		var $listOutput = $("#listOutput");
+		var $list = $("<ul>");
+		$("<h4>").html("Existing Tables").appendTo($listOutput);
+		$listOutput.append($list);
+		
+		var d = JSON.parse(JSON.stringify(jsondata["data"]));
+		
+		for (i = 0; i < d.length; i++) {
+			var $li = $("<li>");
+			$li.html(d[i]["table_name"]);
+			$list.append($li);
+		}
     })
     .fail(function( jqXHR, textStatus, errorThrown )
     {

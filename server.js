@@ -333,11 +333,11 @@ var server = http.createServer( function (request, response) {
 		
 		if (access == ip) {
 			pool.query('SELECT table_name FROM information_schema.tables WHERE table_schema=\'public\'', function(err, result) {
-				console.log(result.rows); 
-				for (i=0; i < result.rows.length; i++) {
-					console.log(result.rows[i]); //just put result.rows into the json directly
-				}
-				var jsonObj = {"decision" : 1, "reason" : "Success: Displaying all tables"};
+				//console.log(result.rows); 
+				//for (i=0; i < result.rows.length; i++) {
+				//	console.log(result.rows[i]); //just put result.rows into the json directly
+				//}
+				var jsonObj = {"decision" : 1, "reason" : "Success: Displaying all tables", "data" : result.rows};
 				sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);	
 			});
 		}
@@ -450,7 +450,7 @@ function create(response, first, last, user, pass) {
 
 //Send Login Result
 function sendLogin(response, decision, source, user, access){
-	fs.readFile("maps.html", function (err, data) {
+	fs.readFile("loginResult.html", function (err, data) {
 		response.writeHead(200, {'Content-Type': 'text/html'});	
 		response.write(data);
 		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
