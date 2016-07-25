@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Signup Page</title>
+		<meta charset="UTF-8">
+		<link href="assets/css/style.css" type="text/css" rel="stylesheet">
+		<script type="text/javascript" src="assets/scripts/jquery-2.2.4.min.js" defer></script>
+		<script type="text/javascript" src="assets/scripts/script.js" defer></script>
+		<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,500,700' rel='stylesheet' type='text/css'>
+	</head>
+	
+	<body class="admin">
+		<section id="output">
+		<!-- Results from previous action -->
+		</section>
+	
+		<section id="update">
+			<h3> Add/Update User </h3>
+			<span> Email:  </span>
+			<input id="email"> </input>
+			<br>
+			<span> Password: </span>
+			<input id="password"> </input>
+			<br>
+			<button id="submitUpdate" onclick="submitUpdate()"> Add/Update </button> 
+		</section>
+		
+		<section id="delete">
+			<h3> Delete User </h3>
+			<span> Email:  </span>
+			<input id="target"> </input>
+			<br>
+			<button id="submitDelete" onclick="submitDelete()"> Delete </button> 
+		</section>
+		<!-- Redirect from loginResults to main, add table manipulation -->
+	</body>
+</html>

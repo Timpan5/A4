@@ -27,7 +27,7 @@ body {
 
 form {
     border: 1px solid #ccc;
-    padding: 2rem;
+    padding-left: 2rem;
     margin: 2rem auto;
     width: 66%;
 }
@@ -70,16 +70,19 @@ label input {
 }
 
 input[type="submit"],
+input[type="button"],
 input[type="reset"] {
     cursor: pointer;
     padding: 0.5rem 2rem;
     /*margin-left: 10rem;*/
 }
 input[type="submit"]:hover,
+input[type="button"]:hover,
 input[type="reset"]:hover {
     background-color: #f3f3f3;
 }
 input[type="submit"]:active,
+input[type="button"]:active,
 input[type="reset"]:active {
     border-color: #999;
     background-color: #ccc;
@@ -88,4 +91,17 @@ input[type="reset"]:active {
 input:invalid {
   outline: 2px solid red;
   background-color: #FFC6B3;
+}
+
+#gh {
+    border: 1px solid #ccc;
+    padding-left: 2rem;
+    padding-bottom: 2rem;
+    margin: 2rem auto;
+    width: 66%;
+}
+
+#ghImg {
+    max-height: 15%;
+    max-width: 30%;
 }

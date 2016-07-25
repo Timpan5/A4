@@ -59,10 +59,6 @@ function ghLogin() {
 	$(location).attr('href', "http://" + window.location.host + "/auth")
 }
 
-function ghRegister() {
-	
-}
-
 $(document).ready(function() {
     // Run initially
     largeNav();
@@ -76,6 +72,79 @@ $(document).ready(function() {
 
 });
 
+//Admin Control - Add/Update users
+function submitUpdate() {
+	
+	var $output = $("#output")
+	$output.empty();
+	
+	var email = $("#email").val();
+	var password = $("#password").val();
+
+	var load = email + "+" + password;
+	
+	var access = $("#access").html();
+	var send = "userUpdate\/" + access;
+	
+	$.ajax(
+    {
+        url: send,
+        method: "POST",
+		data: load,
+        dataType: "json"
+    })
+    .done(function( jsondata )
+    {
+		var decision = jsondata["decision"];
+		var $msg = $("<p>");
+		$msg.html(jsondata["reason"]);
+		$output.append($msg);
+		$("#email").val("");
+		$("#password").val("");
+
+
+    })
+    .fail(function( jqXHR, textStatus, errorThrown )
+    {
+        alert( "Request failed: " + errorThrown );
+    });
+}
+
+//Admin Control - Delete users
+function submitDelete() {
+	
+	var $output = $("#output")
+	$output.empty();
+	
+	var email = $("#target").val();
+	
+	var access = $("#access").html();
+	var send = "userDelete\/" + access;
+	
+	$.ajax(
+    {
+        url: send,
+        method: "POST",
+		data: email,
+        dataType: "json"
+    })
+    .done(function( jsondata )
+    {
+		var decision = jsondata["decision"];
+		var $msg = $("<p>");
+		$msg.html(jsondata["reason"]);
+		$output.append($msg);
+		$("#email").val("");
+		$("#password").val("");
+
+
+    })
+    .fail(function( jqXHR, textStatus, errorThrown )
+    {
+        alert( "Request failed: " + errorThrown );
+    });
+}
+
 //Check login credentials
 $(function(){
 	
@@ -88,6 +157,20 @@ $(function(){
 
 		var access = $("#access").html();
 		$.cookie('access', access);
-		//$.cookie('access');
+		//var user = $.cookie('access'); Gets the encrypted email/username
+		
+		if (access == "") {
+			//Hardcoded with port, change when deployed to url only
+			$(location).attr('href', "http://" + window.location.host);
+		}
+		else {
+			//redirect to main
+		}
+		
+	}
+	
+	if($('body').is('.admin')){
+		$("#access").hide();
+		//alert($("#access").html());
 	}
 });

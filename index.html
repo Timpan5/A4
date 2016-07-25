@@ -14,7 +14,8 @@
 
 <body>
     <form id="signup_form" action="/signin" method="post">
-            
+			<h2> Login </h2>
+
             <div class="form_element">
                 <label id="emailField">
                     <span class="label">Email Address:</span>
@@ -43,9 +44,10 @@
     </form>
 	
 	<section id="gh">
+		<h3> Login or Register with Github </h3>
 		<!-- Hardcoded in function ghLogin() -->
-		<button id="ghLogin" onclick="ghLogin()" >Login with Gibhub</button>
-		<button id="ghRegister" onclick="ghRegister()" >Register with Gibhub</button>
+		<a id="ghLink" href="#" onclick="ghLogin()"><img id="ghImg" src="assets/img/githublogo.png" alt="Github"></a>
+		<!-- <button id="ghLogin" onclick="ghLogin()" >Login/Register with Gibhub</button> -->
 	</section>
 
 </body>
