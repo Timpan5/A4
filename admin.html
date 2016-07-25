@@ -11,13 +11,19 @@
 	</head>
 	
 	<body class="admin">
+	
+		<section id="adminHeader">
+			<h2> Admin Control Panel </h2>
+		</section>
+	
 		<section id="output">
 		<!-- Results from previous action -->
 		</section>
 	
 		<section id="update">
 			<h3> Add/Update User </h3>
-			<span> Email:  </span>
+			<p>If an user exists with the given email, change their password. Otherwise create an user.</p>
+			<span> Email: &nbsp&nbsp&nbsp&nbsp&nbsp </span>
 			<input id="email"> </input>
 			<br>
 			<span> Password: </span>
@@ -28,11 +34,20 @@
 		
 		<section id="delete">
 			<h3> Delete User </h3>
-			<span> Email:  </span>
+			<p>If an user exists with the given email, delete all of their data. Otherwise no-op. </p>
+			<span> Email: &nbsp&nbsp&nbsp&nbsp&nbsp  </span>
 			<input id="target"> </input>
 			<br>
 			<button id="submitDelete" onclick="submitDelete()"> Delete </button> 
 		</section>
-		<!-- Redirect from loginResults to main, add table manipulation -->
+		
+		<section id="database">
+			<h3> List Database Tables </h3>
+			<p>List the names of all tables in this database.</p>
+			<button id="listTables" onclick="listTables()"> List Tables </button> 
+			<section id="listOutput"/>
+		</section>
+		
+		
 	</body>
 </html>

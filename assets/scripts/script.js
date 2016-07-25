@@ -145,6 +145,39 @@ function submitDelete() {
     });
 }
 
+//Admin Control - Delete users
+function listTables() {
+	
+	var $output = $("#output")
+	$output.empty();
+	
+	var $listOutput = $("#listOutput");
+	$listOutput.empty();
+	
+	var access = $("#access").html();
+	var send = "listTables\/" + access;
+	
+	$.ajax(
+    {
+        url: send,
+        method: "GET",
+        dataType: "json"
+    })
+    .done(function( jsondata )
+    {
+		var decision = jsondata["decision"];
+		var $msg = $("<p>");
+		$msg.html(jsondata["reason"]);
+		$output.append($msg);
+
+
+    })
+    .fail(function( jqXHR, textStatus, errorThrown )
+    {
+        alert( "Request failed: " + errorThrown );
+    });
+}
+
 //Check login credentials
 $(function(){
 	

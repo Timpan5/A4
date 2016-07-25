@@ -99,7 +99,6 @@ var server = http.createServer( function (request, response) {
 	
 	//Send jQuery cookies library
 	else if (pathname.substr(1,11) == 'assets/img/') {
-		
 		fs.readFile("assets/img/" + pathname.substr(12), function (err, data) {
 		sendData({'Content-Type': 'text/javascript'}, data, response);
 		console.log('Sent image' + pathname.substr(12));
@@ -250,8 +249,7 @@ var server = http.createServer( function (request, response) {
 			request.on('data', function (data) {
 				body += data;
 			});
-		
-		
+			
 			request.on('end', function () {
 				split = body.split("+");
 				email = split[0];
@@ -278,7 +276,6 @@ var server = http.createServer( function (request, response) {
 			var jsonObj = {"decision" : 0, "reason" : "Invalid Credentials"};
 			sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
 		}
-		
 	}
 	
 	else if (pathname.substr(1,11) == 'userDelete\/') {
@@ -296,8 +293,7 @@ var server = http.createServer( function (request, response) {
 			request.on('data', function (data) {
 				body += data;
 			});
-		
-		
+
 			request.on('end', function () {
 
 				pool.query('DELETE FROM name WHERE email=$1', [body], function(err) {})
@@ -311,9 +307,29 @@ var server = http.createServer( function (request, response) {
 			var jsonObj = {"decision" : 0, "reason" : "Invalid Credentials"};
 			sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
 		}
-		
 	}
 	
+	else if (pathname.substr(1,11) == 'listTables\/') {
+		
+		var access = decrypt(decodeURI(pathname.substr(12)).replace(/\s/g, ""));
+		var ip = requestIp.getClientIp(request);
+		
+		if (access == ip) {
+			pool.query('SELECT table_name FROM information_schema.tables WHERE table_schema=\'public\'', function(err, result) {
+				console.log(result.rows); 
+				for (i=0; i < result.rows.length; i++) {
+					console.log(result.rows[i]); //just put result.rows into the json directly
+				}
+				var jsonObj = {"decision" : 1, "reason" : "Success: Displaying all tables"};
+				sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);	
+			});
+		}
+		
+		else {
+			var jsonObj = {"decision" : 0, "reason" : "Invalid Credentials"};
+			sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
+		}
+	}
 	
 	//Url not recognized
 	else {	

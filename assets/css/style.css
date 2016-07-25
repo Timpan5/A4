@@ -105,3 +105,32 @@ input:invalid {
 	max-height: 15%;
 	max-width: 30%;
 }
+
+#output {
+	border: 2px solid blue;
+	padding-left: 2rem;
+}
+
+body.admin {
+	border: 1px solid #ccc;
+    padding-left: 2rem;
+	padding-bottom: 2rem;
+    margin: 2rem auto;
+    width: 66%;
+}
+
+body.admin button {
+	padding: 5px;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	background-color: #ccb;
+}
+
+body.admin button:hover {
+	background-color: #f3f3f3;
+	cursor: pointer;
+}
+
+body.admin section {
+	border-bottom: 1px solid black;
+}
