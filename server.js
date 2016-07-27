@@ -545,7 +545,7 @@ function getMatches (response, matches){
 
 //Send Login Result
 function sendLogin(response, decision, source, user, access){
-	fs.readFile("loginResult.html", function (err, data) {
+	fs.readFile("maps.html", function (err, data) {
 		response.writeHead(200, {'Content-Type': 'text/html'});	
 		response.write(data);
 		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
