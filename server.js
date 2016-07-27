@@ -97,6 +97,13 @@ var server = http.createServer( function (request, response) {
 		});
 	}
 
+	else if (pathname.substr(1) == 'assets/scripts/pplscript.js') {
+		fs.readFile("assets/scripts/pplscript.js", function (err, data) {
+		sendData({'Content-Type': 'text/javascript'}, data, response);
+		console.log('Sent js');
+		});
+	}
+
 	
 	//Send jQuery library
 	else if (pathname.substr(1) == 'assets/scripts/jquery-2.2.4.min.js') {
@@ -133,18 +140,43 @@ var server = http.createServer( function (request, response) {
 		
 		request.on('end', function () {
             var post = qs.parse(body);
-			
+			console.log(body);
+			console.log(post);
 			var encrypted = encrypt(post.email);
 			
-			/*
+			
 			console.log("===");
 			console.log("Base username: " + post.email);
 			console.log("Encrypted username: " + encrypted);
 			console.log("Decrypted username: " + decrypt(encrypted));
 			console.log("===");
-			*/
+			
 			
 			auth(post.email, post.password, response, request);
+        });
+
+	}
+
+	else if (pathname.substr(1) == 'matching') {
+		console.log("at matching");
+		var body = '';
+		
+		request.on('data', function (data) {
+			body += data;
+		});
+		
+		request.on('end', function () {
+            var post = qs.parse(body);
+				
+			console.log("SERGJESGHOESGHS");
+			console.log(post);
+			console.log("Username: " + post.email);
+			console.log("Location: " + post.location);
+			console.log("SEIUOGHOSEIGHOSHU");
+
+			setLoc(post.email, post.location, response);
+			matches(post.email, post.location, response);
+			console.log("called set loc");
         });
 
 	}
@@ -356,7 +388,7 @@ var server = http.createServer( function (request, response) {
 	}  
 });
 
-server.listen(process.env.PORT || 5000);
+server.listen(4000);
 console.log('Server running');
 console.log(process.env.PORT, process.env.DATABASE_URL);
 
@@ -439,6 +471,8 @@ function create(response, first, last, user, pass) {
 					//Create this user
 					pool.query('INSERT INTO login VALUES ($1, $2)', [user, pass], function(err) {
 						pool.query('INSERT INTO name VALUES ($1, $2, $3)', [user, first, last], function(err) {
+							pool.query('INSERT INTO home VALUES ($1, $2)', [user, "None"], function(err) {
+							});
 						});
 					});
 					sendLogin(response, "Success", "Manual", user, 1);
@@ -448,12 +482,74 @@ function create(response, first, last, user, pass) {
 	});
 }
 
+function setLoc(user, location, response) { 
+	console.log("called set loc");
+	pool.query('SELECT * FROM home WHERE email=$1', [user], function(err, result) {
+
+		if (result.rows.length) {
+			//User already exists
+			pool.query('UPDATE home SET location=$1 WHERE email=$2', [location, user], function(err, result) {})
+			console.log("update");
+		} else {
+			pool.query('INSERT INTO home VALUES ($1, $2)', [user, location], function(err) {});
+			console.log("inserted "+user+" and "+location+"");
+		}
+	});
+
+	pool.query('SELECT * FROM home WHERE email=$1', [user], function(err, result) {
+
+		if (result.rows.length && result.rows[0].location == location){
+			console.log("Set location");
+		} else {
+			console.log("fail");
+		}
+
+	});
+
+	
+}
+
+function matches(user, location, response) { 
+	
+	
+	var matches = "";
+
+	pool.query('SELECT * FROM home WHERE location=$1', [location], function(err, result) {
+		if (result.rows.length) {
+			console.log(result.rows.length);
+			var co = ":";
+			console.log("found matches:");
+			for (i = 0; i < result.rows.length; i ++){
+				console.log(result.rows[i].email);
+				matches = matches.concat(result.rows[i].email.concat(co));
+				console.log(matches);
+			}
+			
+		} else {
+			console.log("no matches");
+		}
+		getMatches(response, matches);
+	});
+
+	
+}
+
+function getMatches (response, matches){
+	fs.readFile("matches.html", function (err, data) {
+		response.writeHead(200, {'Content-Type': 'text/html'});	
+		response.write(data);
+		response.write("<input id=\"matches\" type=\"hidden\" value="+ matches +">");
+		response.end();
+	});
+}
+
 //Send Login Result
 function sendLogin(response, decision, source, user, access){
 	fs.readFile("maps.html", function (err, data) {
 		response.writeHead(200, {'Content-Type': 'text/html'});	
 		response.write(data);
 		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
+		response.write("<input id=\"val\" type=\"hidden\" value="+ user +">");
 		
 		if (access) {
 			response.write("<div id=\"access\"> " + encrypt(user) + " </div>");
@@ -465,7 +561,7 @@ function sendLogin(response, decision, source, user, access){
 		response.end();
 	});
 }
-
+ 
 //Encrypt
 function encrypt(text){
 	var cipher = crypto.createCipher(algorithm, password)

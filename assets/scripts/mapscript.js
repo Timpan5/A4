@@ -87,7 +87,8 @@ function buttons(place) {
     btn.appendChild(t);
     btn.setAttribute("id", place.name);
     btn.setAttribute("class", "food");
-    btn.setAttribute("value", [place.name, place.geometry.location, place.opening_hours.open_now, place.rating]);
+    btn.setAttribute("type", "submit");
+    btn.setAttribute("value", place.name);//, place.geometry.location, place.opening_hours.open_now, place.rating]);
     document.getElementById("rest").appendChild(btn) 
     document.getElementById("rest").innerHTML =  document.getElementById("rest").innerHTML  + "<br>";
 }
@@ -95,7 +96,8 @@ function buttons(place) {
 $(document).ready(function(){
     $("#rest").on('click', '.food', function() {
       console.log(this.value);
-      document.getElementById("detail").innerHTML = this.value;
+      document.getElementById("one").value = document.getElementById("val").value;
+      document.getElementById("two").value = this.value;
     });
 });
     
