@@ -166,18 +166,20 @@ var server = http.createServer( function (request, response) {
 		});
 		
 		request.on('end', function () {
-            var post = qs.parse(body);
+            var post = body.split("+");
 				
 			console.log("SERGJESGHOESGHS");
 			console.log(post);
-			console.log("Username: " + post.email);
-			console.log("Location: " + post.location);
+			console.log("Username: " + post[0]);
+			console.log("Location: " + post[1]);
 			console.log("SEIUOGHOSEIGHOSHU");
 
-			setLoc(post.email, post.location, response);
-			matches(post.email, post.location, response);
-			console.log("called set loc");
+
+			setLoc(post[0], post[1], response);
+			matches(post[0], post[1], response);
+			
         });
+
 
 	}
 	
@@ -528,7 +530,7 @@ function matches(user, location, response) {
 		} else {
 			console.log("no matches");
 		}
-		getMatches(response, matches);
+		sendData({'Content-Type': 'text/plain'}, matches, response);
 	});
 
 	

@@ -153,7 +153,7 @@ function submit(place) {
         btn.appendChild(t);
         btn.setAttribute("id", "Matches");
         btn.setAttribute("class", "food");
-        btn.setAttribute("type", "submit");
+        btn.setAttribute("type", "text");
         btn.setAttribute("value", placee.name);//, place.geometry.location, place.opening_hours.open_now, place.rating]);
         document.getElementById("dets").appendChild(btn);
       }
@@ -172,6 +172,34 @@ function buttons(place) {
 
     document.getElementById("rest").appendChild(btn);
 }
+
+function getMatches() {
+  
+  var $dets = $("#dets");
+
+  var user = $("#one").val();
+  var location = $("#two").val();
+
+  var load = user + "+" + location;
+
+  var send = "matching";
+  
+  $.ajax(
+    {
+        url: send,
+        method: "POST",
+    data: load,
+        dataType: "text"
+    })
+    .done(function( mat )
+    {
+    console.log("IHOWIEGHFWOEIHGOWEHGEWSOHI");
+    console.log(mat);
+    console.log("done")
+    });
+}
+
+
 $(document).ready(function(){
   $("#rest").on('click', '.deets', function() {
     var service = new google.maps.places.PlacesService(map);
@@ -189,9 +217,7 @@ $(document).ready(function(){
     console.log(this.value);
     document.getElementById("one").value = document.getElementById("val").value;
     document.getElementById("two").value = this.value;
-  });
-  $("#details").on('click', '.img', function() {
-    console.log(this.value);
+    getMatches();
   });
 });
     
