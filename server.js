@@ -32,7 +32,7 @@ var oauth2 = require('simple-oauth2')({
 //Port must be changed to use env
 //Also change on github settings for authorization callback url
 var authorization_uri = oauth2.authCode.authorizeURL({
-	redirect_uri: 'http://localhost:5000/callback', //HARDCODED PORT
+	redirect_uri: 'https://csc309-a4.herokuapp.com/callback', 
 	scope: 'user:email',
 	state: '*(A&S%f'
 });
@@ -144,12 +144,13 @@ var server = http.createServer( function (request, response) {
 			console.log(post);
 			var encrypted = encrypt(post.email);
 			
-			
+			/*
 			console.log("===");
 			console.log("Base username: " + post.email);
 			console.log("Encrypted username: " + encrypted);
 			console.log("Decrypted username: " + decrypt(encrypted));
 			console.log("===");
+			*/
 			
 			
 			auth(post.email, post.password, response, request);
@@ -207,7 +208,7 @@ var server = http.createServer( function (request, response) {
 		
 		oauth2.authCode.getToken({
 			code: code,
-			redirect_uri: 'http://localhost:5000/callback' //HARDCODED PORT, must match on github website
+			redirect_uri: 'https://csc309-a4.herokuapp.com/callback'
 		}, saveToken);
  
 
@@ -286,7 +287,6 @@ var server = http.createServer( function (request, response) {
 		
 		var access = decrypt(decodeURI(pathname.substr(12)).replace(/\s/g, ""));
 		var ip = requestIp.getClientIp(request);
-		
 		
 		if (access == ip) {
 			
@@ -434,10 +434,7 @@ function auth(user, pass, response, request) {
 	
 	if (result.rows.length && pass == result.rows[0].password && user == "admin") {
 		//Send to an admin control panel html page
-		
-		//Admin Key
-		//var now = new Date();
-		//var d = new Date(1900 + now.getYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
 		var ip = requestIp.getClientIp(request);
 		
 		fs.readFile("admin.html", function (err, data) {
