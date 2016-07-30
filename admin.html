@@ -45,9 +45,18 @@
 			<h3> List Database Tables </h3>
 			<p>List the names of all tables in this database.</p>
 			<button id="listTables" onclick="listTables()"> List Tables </button> 
-			<section class="inner" id="listOutput"/>
+			<section class="inner" id="listOutput"> </section>
 		</section>
 		
+		<section id="databaseRead">
+			<h3> Get Database Tuples </h3>
+			<p>View table data using standard psql query.</p>
+			<span> SELECT &nbsp&nbsp <input id="tableSelect" value="*"> </input> </span> <br>
+			<span> FROM &nbsp&nbsp&nbsp&nbsp&nbsp <input id="tableFrom"> </input> </span> <br>
+			<span> WHERE &nbsp&nbsp <input id="tableWhere"> </input> </span> <br>
+			<button id="getTables" onclick="getTables()"> Get Tables </button> 
+			<section class="inner" id="tableOutput"> </section>
+		</section>
 		
 	</body>
 </html>

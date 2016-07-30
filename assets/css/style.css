@@ -135,10 +135,30 @@ body.admin section {
 	border-bottom: 1px solid black;
 }
 
+#listOutput {
+	border-bottom: 0px;
+}
+
 #listOutput ul {
 	list-style: square;
 }
 
-section.inner {
-	border: 0px;
+#tableOutput {
+	border-bottom: 0px;
+	padding-bottom: 5px;
+}
+
+#tableOutput ul {
+	list-style: none;
+}
+
+#tableOutput table {
+	margin: auto;
+	border-collapse: collapse;
+	padding-bottom: 5px;
+}
+
+#tableOutput td {
+	padding-right: 20px;
+	border-bottom: 1px solid black;
 }
