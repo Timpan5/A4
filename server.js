@@ -365,13 +365,39 @@ var server = http.createServer( function (request, response) {
 		
 		if (access == ip) {
 			pool.query('SELECT table_name FROM information_schema.tables WHERE table_schema=\'public\'', function(err, result) {
-				//console.log(result.rows); 
-				//for (i=0; i < result.rows.length; i++) {
-				//	console.log(result.rows[i]); //just put result.rows into the json directly
-				//}
 				var jsonObj = {"decision" : 1, "reason" : "Success: Displaying all tables", "data" : result.rows};
 				sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);	
 			});
+		}
+		
+		else {
+			var jsonObj = {"decision" : 0, "reason" : "Invalid Credentials"};
+			sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);
+		}
+	}
+	
+		else if (pathname.substr(1,11) == 'viewTables\/') {
+		
+		var access = decrypt(decodeURI(pathname.substr(12)).replace(/\s/g, ""));
+		var ip = requestIp.getClientIp(request);
+		
+		if (access == ip) {
+			var body = '';
+			
+			request.on('data', function (data) {
+				body += data;
+			});
+			
+			request.on('end', function () {
+				var split = body.split("+");
+				var q = "SELECT " + split[0] + " FROM " + split[1] + " WHERE " + split[2];
+				pool.query(q, function(err, result) {
+					//console.log(result);
+					var jsonObj = {"decision" : 1, "reason" : "Success: Displaying table", "data" : result};
+					sendData({'Content-Type': 'application/json'}, JSON.stringify(jsonObj), response);	
+				});
+			});
+			
 		}
 		
 		else {
@@ -388,7 +414,7 @@ var server = http.createServer( function (request, response) {
 	}  
 });
 
-server.listen(4000);
+server.listen(process.env.PORT || 4000);
 console.log('Server running');
 console.log(process.env.PORT, process.env.DATABASE_URL);
 
@@ -510,8 +536,7 @@ function setLoc(user, location, response) {
 }
 
 function matches(user, location, response) { 
-	
-	
+
 	var matches = "";
 
 	pool.query('SELECT * FROM home WHERE location=$1', [location], function(err, result) {

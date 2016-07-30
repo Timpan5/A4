@@ -143,7 +143,7 @@ function submitDelete() {
     });
 }
 
-//Admin Control - Delete users
+//Admin Control - Get table names
 function listTables() {
 	
 	var $output = $("#output")
@@ -180,6 +180,84 @@ function listTables() {
 			$li.html(d[i]["table_name"]);
 			$list.append($li);
 		}
+    })
+    .fail(function( jqXHR, textStatus, errorThrown )
+    {
+        alert( "Request failed: " + errorThrown );
+    });
+}
+
+//Admin Control - View tables
+function getTables() {
+	
+	var $output = $("#output");
+	$output.empty();
+	var $tableOutput = $("#tableOutput");
+	$tableOutput.empty();
+	
+	var tSelect = $("#tableSelect").val();
+	var tFrom = $("#tableFrom").val();
+	var tWhere = $("#tableWhere").val();
+	
+	if (tSelect == "") {
+		tSelect = "*";
+	}
+	if (tWhere == "") {
+		tWhere = "true";
+	}
+
+	var load = tSelect + "+" + tFrom + "+" + tWhere;
+	
+	var access = $("#access").html();
+	var send = "viewTables\/" + access;
+	
+	$.ajax(
+    {
+        url: send,
+        method: "POST",
+		data: load,
+        dataType: "json"
+    })
+    .done(function( jsondata )
+    {
+		
+		
+		var decision = jsondata["decision"];
+		var $msg = $("<p>");
+		$msg.html(jsondata["reason"]);
+		$output.append($msg);
+		
+		$("#tableSelect").val("");
+		$("#tableFrom").val("");
+		$("#tableWhere").val("");
+		
+		var $table = $("<table>");
+		$tableOutput.append($table);
+		
+		var fields = jsondata["data"]["fields"];
+		
+		var $attributes = $("<tr>");
+		$table.append($attributes);
+		
+		for (i = 0; i < fields.length; i++) {
+			var $th = $("<th>");
+			$th.html(fields[i]["name"]);
+			$attributes.append($th);
+		}
+		
+		var rows = jsondata["data"]["rows"];
+		
+		for (i = 0; i < rows.length; i++) {
+			var $tr = $("<tr>");
+			$table.append($tr);
+
+			for (j = 0; j < fields.length; j++) {
+				var $td = $("<td>");
+				$tr.append($td);
+				$td.html(rows[i][fields[j]["name"]]);
+			}
+		}
+
     })
     .fail(function( jqXHR, textStatus, errorThrown )
     {
