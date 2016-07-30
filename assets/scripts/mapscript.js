@@ -10,7 +10,7 @@ var infowindow;
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: -34.397, lng: 150.644},
-    zoom: 15
+    zoom: 14
   });
   infowindow = new google.maps.InfoWindow();
 
@@ -23,8 +23,10 @@ function initMap() {
       };
       map.setCenter(pos);
 
+      var image = "http://maps.google.com/mapfiles/arrow.png"
       var marker=new google.maps.Marker({
         position:pos,
+        icon: image
       });
 
       marker.setMap(map);
@@ -64,20 +66,98 @@ function callback(results, status) {
 }
 
 function createMarker(place) {
-  var placeLoc = place.geometry.location;
-  var marker = new google.maps.Marker({
-    map: map,
-    position: place.geometry.location
+  
 
+  
+
+  var service = new google.maps.places.PlacesService(map);
+
+  service.getDetails({
+    placeId: place.place_id
+  }, function(place, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      buttons(place);
+      var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+      });
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+          place.formatted_address + '</div>');
+        infowindow.open(map, this);
+      });
+    }
   });
+}
 
-  buttons(place);
+function clearBox(elementID)
+{
+    document.getElementById(elementID).innerHTML = "";
+}
 
-  google.maps.event.addListener(marker, 'click', function() {
-    infowindow.setContent(place.name);
-    infowindow.open(map, this);
+function submit(place) {
+
+    clearBox("dets");
+
+    var service = new google.maps.places.PlacesService(map);
+
+    service.getDetails( {
+      placeId: place
+    }, function(placee, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        console.log(placee.formatted_address);
     
-  });
+        var name = document.createElement("P");
+        var t = document.createTextNode("Name: "+placee.name+"");
+        name.appendChild(t);
+        document.getElementById("dets").appendChild(name);
+
+        var name = document.createElement("P");
+        var t = document.createTextNode("Location: "+placee.formatted_address+"");
+        name.appendChild(t);
+        document.getElementById("dets").appendChild(name);
+
+        var today = new Date();
+        var name = document.createElement("P");
+        var t = document.createTextNode("Opens "+placee.opening_hours.weekday_text[today.getDay() - 1]+"");
+        name.appendChild(t);
+        document.getElementById("dets").appendChild(name);
+
+        var name = document.createElement("P");
+        var t = document.createTextNode("Phone Number: "+placee.formatted_phone_number+"");
+        name.appendChild(t);
+        document.getElementById("dets").appendChild(name);
+
+        var name = document.createElement("P");
+        var t = document.createTextNode("Rating: "+placee.rating+"");
+        name.appendChild(t);
+        document.getElementById("dets").appendChild(name);
+
+        if (placee.photos){
+          var input = document.createElement("input");
+          input.setAttribute("type", "hidden");
+          input.setAttribute("id", "input");
+          input.setAttribute("value", placee.photos.length);
+          document.getElementById("dets").appendChild(input);
+
+          var ima = document.createElement("IMG");
+          ima.setAttribute("src", placee.photos[0].getUrl({'maxWidth': 300, 'maxHeight': 300}));
+          ima.setAttribute("alt", "Photo of restaurant");
+          ima.setAttribute("class", "img");
+          document.getElementById("dets").appendChild(ima);
+        }
+        
+        var btn = document.createElement("BUTTON");
+        var t = document.createTextNode("Find Matches");
+
+        btn.appendChild(t);
+        btn.setAttribute("id", "Matches");
+        btn.setAttribute("class", "food");
+        btn.setAttribute("type", "submit");
+        btn.setAttribute("value", placee.name);//, place.geometry.location, place.opening_hours.open_now, place.rating]);
+        document.getElementById("dets").appendChild(btn);
+      }
+    });
 }
 
 function buttons(place) {
@@ -86,18 +166,32 @@ function buttons(place) {
 
     btn.appendChild(t);
     btn.setAttribute("id", place.name);
-    btn.setAttribute("class", "food");
-    btn.setAttribute("type", "submit");
-    btn.setAttribute("value", place.name);//, place.geometry.location, place.opening_hours.open_now, place.rating]);
-    document.getElementById("rest").appendChild(btn) 
-    document.getElementById("rest").innerHTML =  document.getElementById("rest").innerHTML  + "<br>";
-}
+    btn.setAttribute("class", "deets");
+    btn.setAttribute("type", "text");
+    btn.setAttribute("value", place.place_id);
 
+    document.getElementById("rest").appendChild(btn);
+}
 $(document).ready(function(){
-    $("#rest").on('click', '.food', function() {
-      console.log(this.value);
-      document.getElementById("one").value = document.getElementById("val").value;
-      document.getElementById("two").value = this.value;
+  $("#rest").on('click', '.deets', function() {
+    var service = new google.maps.places.PlacesService(map);
+
+    service.getDetails( {
+      placeId: this.value
+    }, function(placee, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        map.setCenter(placee.geometry.location)
+      }
     });
+    submit(this.value);
+  });
+  $("#details").on('click', '.food', function() {
+    console.log(this.value);
+    document.getElementById("one").value = document.getElementById("val").value;
+    document.getElementById("two").value = this.value;
+  });
+  $("#details").on('click', '.img', function() {
+    console.log(this.value);
+  });
 });
     

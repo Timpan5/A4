@@ -545,21 +545,29 @@ function getMatches (response, matches){
 
 //Send Login Result
 function sendLogin(response, decision, source, user, access){
-	fs.readFile("maps.html", function (err, data) {
-		response.writeHead(200, {'Content-Type': 'text/html'});	
-		response.write(data);
-		response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
-		response.write("<input id=\"val\" type=\"hidden\" value="+ user +">");
+
 		
-		if (access) {
-			response.write("<div id=\"access\"> " + encrypt(user) + " </div>");
-		}
-		else {
+	if (access) {
+		fs.readFile("maps.html", function (err, data) {
+			response.writeHead(200, {'Content-Type': 'text/html'});	
+			response.write(data);
+			//response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
+			response.write("<input id=\"val\" type=\"hidden\" value="+ user +">");
+			//response.write("<div id=\"access\"> " + encrypt(user) + " </div>");
+			response.end();
+		});
+	}
+	else {
+		fs.readFile("loginResult.html", function (err, data) {
+			response.writeHead(200, {'Content-Type': 'text/html'});	
+			response.write(data);
+			response.write("<div id=\"credentials\"> "+ decision + ":" + source + ":" + user + "</div>");
+			response.write("<input id=\"val\" type=\"hidden\" value="+ user +">");
 			response.write("<div id=\"access\"></div>");
-		}
-		
-		response.end();
-	});
+			response.end();
+		});
+	}
+
 }
  
 //Encrypt

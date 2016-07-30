@@ -6,19 +6,29 @@
     <meta charset="utf-8">
     <link href="assets/css/mapstyle.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="assets/scripts/mapscript.js" defer></script>
+
   </head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <body>
-    <div id="map"></div>
+    <div id="map">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOaShDGwIxc_9Fzfs4U_KYmbdxr8rLIEk&libraries=places&callback=initMap" async defer></script>
-    <h2> Resturants:</h2>
-    <form id="rest" action="/matching" method="post">
+    </div>
+
+    
+    <form id="details" action="/matching" method="post">
+      <h2 id> Details:</h2>
+      <div id = "dets"></div>
       <input type="hidden" name = "email" id="one" >
       <input type="hidden" name = "location" id="two" >
     </form>
-
-    <div id = "details">
     </div>
+    
+    <div id = "rest">
+      <h2 id = "resta"> Resturants (Click for details):</h2>
+      
+    </div>
+
+    
 
   </body>
 </html>
