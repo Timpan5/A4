@@ -1,0 +1,21 @@
+#chat {
+    height: 500px;
+}
+
+#contentDiv {
+    display: none;
+}
+
+#chatDiv {
+    float: left;
+    border: 1px solid black;
+}
+
+.err  {
+    color: red;
+}
+
+.private {
+    color: grey;
+    font-style: italic;
+}
