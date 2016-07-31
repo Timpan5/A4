@@ -7,6 +7,8 @@ var rr = require("request");
 var gh = require("github");
 var crypto = require('crypto'), algorithm = 'aes-256-ctr', password = 'csc309';
 var requestIp = require('request-ip');
+var io = require('socket.io').listen(server);
+var usernames = {};
 
 //PSQL - Database URL may change automatically, check settings page config variables
 const Pool = require('pg-pool');
@@ -81,6 +83,14 @@ var server = http.createServer( function (request, response) {
 		});
 	}
 	
+	//send chat css
+	else if (pathname.substr(1) == 'assets/css/chatstyle.css') {
+		fs.readFile("assets/css/chatstyle.css", function (err, data) {
+		sendData({'Content-Type': 'text/css'}, data, response);
+		console.log('Sent css');
+		});
+	}	
+	
 	//Send front-end js
 	else if (pathname.substr(1) == 'assets/scripts/script.js') {
 		fs.readFile("assets/scripts/script.js", function (err, data) {
@@ -97,6 +107,7 @@ var server = http.createServer( function (request, response) {
 		});
 	}
 
+	//Send ppl js
 	else if (pathname.substr(1) == 'assets/scripts/pplscript.js') {
 		fs.readFile("assets/scripts/pplscript.js", function (err, data) {
 		sendData({'Content-Type': 'text/javascript'}, data, response);
@@ -104,6 +115,21 @@ var server = http.createServer( function (request, response) {
 		});
 	}
 
+	//Send chat js
+	else if (pathname.substr(1) == 'assets/scripts/chatscript.js') {
+		fs.readFile("assets/scripts/chatscript.js", function (err, data) {
+		sendData({'Content-Type': 'text/javascript'}, data, response);
+		console.log('Sent js');
+		});
+	}
+	
+	//Send socket.io js
+	else if (pathname.substr(1) == 'socket.io/socket.io.js') {
+		fs.readFile("socket.io/socket.io.js", function (err, data) {
+		sendData({'Content-Type': 'text/javascript'}, data, response);
+		console.log('Sent js');
+		});
+	}
 	
 	//Send jQuery library
 	else if (pathname.substr(1) == 'assets/scripts/jquery-2.2.4.min.js') {
@@ -180,9 +206,61 @@ var server = http.createServer( function (request, response) {
 			matches(post[0], post[1], response);
 			
         });
-
-
 	}
+	
+	/**
+	else if (pathname.substr(1) == 'chatching') {
+		console.log("at chatching");
+		
+		io.sockets.on('connection', function(socket){
+		    socket.on('new user', function(data, callback){
+		        // user already exists
+		        if (data in usernames) {
+		            callback(false);
+		        }
+		        else {
+		            callback(true);
+		            socket.username = data
+		            usernames[socket.username] = socket;
+		            io.sockets.emit('usernames', Object.keys(usernames));
+				}
+		    });
+	    
+		    socket.on('disconnect', function(data){
+		        if (! socket.username) return
+		        delete usernames[socket.username];
+		        io.sockets.emit('usernames', Object.keys(usernames));
+		    });
+	    
+		    socket.on('send message', function(data, callback){
+		        var message = data.trim();
+				// if you want to have a private chat with another user
+				if (message.substring(0,3) === '/p ') {
+				    message = message.substring(3);
+				    var index = message.indexOf(' ');
+				    if (index != -1) {
+				        var chatWith = message.substring(0, index);
+				        message = message.substring(index + 1);
+				        if (chatWith in usernames) {
+				            usernames[chatWith].emit('private chat', {msg: message, username: socket.username})
+				        }
+				        else {
+				            callback('Please enter a valid username');
+				        }
+				    }
+				    else {
+				        callback('Please enter a message for private chat');
+				    }
+				}
+				// public chat
+				else {        
+				    io.sockets.emit('new message', {msg: message, username: socket.username});
+				}
+			});
+
+		});
+	}
+	*/
 	
 	//Signup page
 	else if (pathname.substr(1) == 'signup.html') {
@@ -416,7 +494,7 @@ var server = http.createServer( function (request, response) {
 	}  
 });
 
-server.listen(process.env.PORT || 4000);
+server.listen(process.env.PORT || 4001);
 console.log('Server running');
 console.log(process.env.PORT, process.env.DATABASE_URL);
 
