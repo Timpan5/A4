@@ -537,35 +537,37 @@ function setLoc(user, location, response) {
 function matches(user, location, response) { 
 
 	var matches = "";
+	var matches = {"users" : []};
 
 	pool.query('SELECT * FROM home WHERE location=$1', [location], function(err, result) {
+		
 		if (result.rows.length) {
 			console.log(result.rows.length);
-			var co = ":";
 			console.log("found matches:");
 			for (i = 0; i < result.rows.length; i ++){
-				console.log(result.rows[i].email);
-				matches = matches.concat(result.rows[i].email.concat(co));
-				console.log(matches);
+				if(result.rows[i].email != user){
+					console.log(result.rows[i].email);
+					matches["users"].push(result.rows[i].email);
+				}
 			}
 			
 		} else {
-			console.log("no matches");
+			matches["users"] = [];
 		}
-		sendData({'Content-Type': 'text/plain'}, matches, response);
+		sendData({'Content-Type': 'application/json'}, JSON.stringify(matches), response);
 	});
 
 	
 }
 
-function getMatches (response, matches){
-	fs.readFile("matches.html", function (err, data) {
-		response.writeHead(200, {'Content-Type': 'text/html'});	
-		response.write(data);
-		response.write("<input id=\"matches\" type=\"hidden\" value="+ matches +">");
-		response.end();
-	});
-}
+// function getMatches (response, matches){
+// 	fs.readFile("matches.html", function (err, data) {
+// 		response.writeHead(200, {'Content-Type': 'text/html'});	
+// 		response.write(data);
+// 		response.write("<input id=\"matches\" type=\"hidden\" value="+ matches +">");
+// 		response.end();
+// 	});
+// }
 
 //Send Login Result
 function sendLogin(response, decision, source, user, access){

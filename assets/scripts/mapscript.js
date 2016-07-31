@@ -173,6 +173,19 @@ function buttons(place) {
     document.getElementById("rest").appendChild(btn);
 }
 
+function matches(user){
+    var btn = document.createElement("BUTTON");
+    var t = document.createTextNode(user);
+
+    btn.appendChild(t);
+    btn.setAttribute("id", user);
+    btn.setAttribute("class", "ppl");
+    btn.setAttribute("type", "text");
+    btn.setAttribute("value", user);
+
+    document.getElementById("dets").appendChild(btn);
+}
+
 function getMatches() {
   
   var $dets = $("#dets");
@@ -189,13 +202,22 @@ function getMatches() {
         url: send,
         method: "POST",
     data: load,
-        dataType: "text"
+        dataType: "json"
     })
     .done(function( mat )
     {
     console.log("IHOWIEGHFWOEIHGOWEHGEWSOHI");
     console.log(mat);
-    console.log("done")
+    if (mat.users.length >= 1){
+      for (i = 0; i < mat.users.length; i++){
+        matches(mat.users[i]);
+      }
+    } else {
+        var name = document.createElement("P");
+        var t = document.createTextNode("No Matches Found");
+        name.appendChild(t);
+        document.getElementById("dets").appendChild(name);
+      }
     });
 }
 
@@ -215,6 +237,7 @@ $(document).ready(function(){
   });
   $("#details").on('click', '.food', function() {
     console.log(this.value);
+    document.getElementById("dets").removeChild(document.getElementById("Matches"));
     document.getElementById("one").value = document.getElementById("val").value;
     document.getElementById("two").value = this.value;
     getMatches();
